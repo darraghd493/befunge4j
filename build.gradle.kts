@@ -15,4 +15,8 @@ allprojects {
     dependencies {
         "compileOnly"("org.jetbrains:annotations:26.1.0")
     }
+
+    tasks.withType<Test> {
+        failOnNoDiscoveredTests = false
+    }
 }
