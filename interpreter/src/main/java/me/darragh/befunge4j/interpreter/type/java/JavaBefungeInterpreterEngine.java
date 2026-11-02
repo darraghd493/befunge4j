@@ -4,6 +4,7 @@ import me.darragh.befunge4j.ast.Token;
 import me.darragh.befunge4j.ast.TokenType;
 import me.darragh.befunge4j.interpreter.BefungeInterpreterConfiguration;
 import me.darragh.befunge4j.interpreter.BefungeInterpreterEngine;
+import me.darragh.befunge4j.parser.type.java.JavaBefungeParserEngine;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -116,8 +117,8 @@ public final class JavaBefungeInterpreterEngine extends BefungeInterpreterEngine
                         stack.push(0);
                     } else {
                         Token token = tokens[y * width + x];
-                        int value = token == null ? ' ' : token.getSource();
-                        stack.push(value);
+                        char ch = token == null ? ' ' : token.getSource();
+                        stack.push(Character.isDigit(ch) ? ch - '0' : ch);
                     }
                 }
                 case PC_PUT -> {
@@ -125,10 +126,7 @@ public final class JavaBefungeInterpreterEngine extends BefungeInterpreterEngine
                     if (x < 0 || x >= width || y < 0 || y >= height) {
                         throw new IllegalStateException("PUT out of bounds");
                     }
-                    // TODO: Fix this - stale token type
-                    Token token = tokens[y * width + x];
-                    TokenType tokenType = token == null ? TokenType.CONSTANT : token.getType();
-                    Token newToken = new Token(tokenType, (char) v);
+                    Token newToken = JavaBefungeParserEngine.tokenise(this.configuration.parserConfiguration().mappings(), (char) v);
                     tokens[y * width + x] = newToken;
                 }
                 //endregion
