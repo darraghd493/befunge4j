@@ -147,7 +147,10 @@ public final class JavaBefungeInterpreterEngine extends BefungeInterpreterEngine
                 //region Miscellaneous
                 case INPUT_INT -> stack.push(this.configuration.console().inInteger());
                 case INPUT_CHAR -> stack.push((int) this.configuration.console().inChar());
-                case END -> reachedEnd = true;
+                case END -> {
+                    reachedEnd = true;
+                    continue;
+                }
                 //endregion
                 case CONSTANT -> {
                     char ch = currentToken.getSource();
