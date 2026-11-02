@@ -7,8 +7,6 @@ import me.darragh.befunge4j.interpreter.BefungeInterpreterEngine;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Stack;
 
 /**
@@ -24,8 +22,6 @@ public final class JavaBefungeInterpreterEngine extends BefungeInterpreterEngine
     public void execute(@Nullable Token @NotNull [] tokens) {
         int width = configuration.width(), height = configuration.height(); // for ease of access
 
-        Queue<Byte> numberComponents = new LinkedList<>(); // used for building the number constant from a series of constant instructions
-
         Stack<Integer> stack = new Stack<>();
 
         boolean stringMode = false;
@@ -33,33 +29,33 @@ public final class JavaBefungeInterpreterEngine extends BefungeInterpreterEngine
         Direction currentDirection = Direction.RIGHT;
 
         // it is easier to reconstruct the index from xy
-        int currentX = 0, currentY = 0;
+        int[] position = new int[] { 0, 0 };
 
         boolean reachedEnd = false; // TODO: Cleaner solution?
         while (!reachedEnd) {
             // fetch the current token
-            int currentIndex = currentY * width + currentX;
+            int currentIndex = position[1] * width + position[0];
             Token currentToken = tokens[currentIndex];
 
-            // update the current index
-            //noinspection DuplicatedCode
-            switch (currentDirection) {
-                case LEFT -> currentX = (currentX - 1 + width) % width;
-                case RIGHT -> currentX = (currentX + 1) % width;
-                case UP -> currentY = (currentY - 1 + height) % height;
-                case DOWN -> currentY = (currentY + 1) % height;
-            }
-
-            if (currentToken == null) continue;
-
             // handle string mode
-            if (currentToken.getType() == TokenType.TOGGLE_STRING_MODE) {
-                stringMode = !stringMode;
+            if (stringMode) {
+                if (currentToken != null && currentToken.getType() == TokenType.TOGGLE_STRING_MODE) { // end string mode
+                    stringMode = false;
+                } else {
+                    stack.push(currentToken == null ? (int) ' ' : (int) currentToken.getSource()); // push char
+                }
+                step(currentDirection, position, width, height);
                 continue;
             }
 
-            if (stringMode) {
-                stack.push((int) currentToken.getSource());
+            if (currentToken == null) {
+                step(currentDirection, position, width, height);
+                continue;
+            }
+
+            if (currentToken.getType() == TokenType.TOGGLE_STRING_MODE) { // early enter string mode
+                stringMode = true;
+                step(currentDirection, position, width, height);
                 continue;
             }
 
@@ -106,23 +102,13 @@ public final class JavaBefungeInterpreterEngine extends BefungeInterpreterEngine
                 case PC_CHANGE_DIRECTION_RANDOM -> currentDirection = Direction.choose();
                 case PC_IF_HORIZONTAL -> {
                     int value = pop(stack);
-                    // currentX = currentX + (value == 0 ? 1 : -1) % width;
                     currentDirection = value == 0 ? Direction.RIGHT : Direction.LEFT;
                 }
                 case PC_IF_VERTICAL -> {
                     int value = pop(stack);
-                    // currentY = currentY + (value == 0 ? 1 : -1) % height;
                     currentDirection = value == 0 ? Direction.DOWN : Direction.UP;
                 }
-                case PC_BRIDGE -> {
-                    //noinspection DuplicatedCode
-                    switch (currentDirection) {
-                        case LEFT -> currentX = (currentX - 1 + width) % width;
-                        case RIGHT -> currentX = (currentX + 1) % width;
-                        case UP -> currentY = (currentY - 1 + height) % height;
-                        case DOWN -> currentY = (currentY + 1) % height;
-                    }
-                }
+                case PC_BRIDGE -> step(currentDirection, position, width, height);
                 //region Complex
                 case PC_GET -> {
                     int y = pop(stack), x = pop(stack);
@@ -159,7 +145,6 @@ public final class JavaBefungeInterpreterEngine extends BefungeInterpreterEngine
                 case STACK_POP_OUTPUT_CHAR -> this.configuration.console().outChar((char) pop(stack));
                 //endregion
                 //region Miscellaneous
-                case TOGGLE_STRING_MODE -> stringMode = !stringMode;
                 case INPUT_INT -> stack.push(this.configuration.console().inInteger());
                 case INPUT_CHAR -> stack.push((int) this.configuration.console().inChar());
                 case END -> reachedEnd = true;
@@ -171,10 +156,21 @@ public final class JavaBefungeInterpreterEngine extends BefungeInterpreterEngine
                     }
                 }
             }
+
+            step(currentDirection, position, width, height);
         }
     }
 
     //region Helpers
+    private static void step(Direction direction, int[] position, int width, int height) {
+        switch (direction) {
+            case LEFT -> position[0] = (position[0] - 1 + width) % width;
+            case RIGHT -> position[0] = (position[0] + 1) % width;
+            case UP -> position[1] = (position[1] - 1 + height) % height;
+            case DOWN -> position[1] = (position[1] + 1) % height;
+        }
+    }
+
     private static int pop(Stack<Integer> stack) {
         return stack.isEmpty() ? 0 : stack.pop();
     }
@@ -183,7 +179,7 @@ public final class JavaBefungeInterpreterEngine extends BefungeInterpreterEngine
     private enum Direction {
         LEFT, RIGHT, UP, DOWN;
 
-        private static Direction[] VALUES = values(); // avoid #values() each #chooseRandom()
+        private static final Direction[] VALUES = values(); // avoid #values() each #choose()
 
         public static @NotNull Direction choose() {
             return VALUES[(int) (Math.random() * VALUES.length)];
