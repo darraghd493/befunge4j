@@ -38,46 +38,45 @@ public final class JavaBefungeParserEngine extends BefungeParserEngine {
         // it makes sense due to how it fundamentally works but...
 
         //region Math
-        if (c == this.configuration.mathAdditionCharacter()) return Tokens.Math.addition();
-        else if (c == this.configuration.mathSubtractionCharacter()) return Tokens.Math.subtraction();
-        else if (c == this.configuration.mathMultiplicationCharacter()) return Tokens.Math.multiplication();
-        else if (c == this.configuration.mathIntegerDivisionCharacter()) return Tokens.Math.integerDivision();
-        else if (c == this.configuration.mathModuloCharacter()) return Tokens.Math.modulo();
+        if (c == this.configuration.mappings().mathAdditionCharacter()) return Tokens.Math.addition(c);
+        else if (c == this.configuration.mappings().mathSubtractionCharacter()) return Tokens.Math.subtraction(c);
+        else if (c == this.configuration.mappings().mathMultiplicationCharacter()) return Tokens.Math.multiplication(c);
+        else if (c == this.configuration.mappings().mathIntegerDivisionCharacter()) return Tokens.Math.integerDivision(c);
+        else if (c == this.configuration.mappings().mathModuloCharacter()) return Tokens.Math.modulo(c);
         //endregion
         //region Logic
-        else if (c == this.configuration.logicNotCharacter()) return Tokens.Logical.not();
-        else if (c == this.configuration.logicGreaterThanCharacter()) return Tokens.Logical.greaterThan();
+        else if (c == this.configuration.mappings().logicNotCharacter()) return Tokens.Logical.not(c);
+        else if (c == this.configuration.mappings().logicGreaterThanCharacter()) return Tokens.Logical.greaterThan(c);
         //endregion
         //region Program Counter
-        else if (c == this.configuration.programCounterMoveLeftCharacter()) return Tokens.ProgramCounter.changeDirectionLeft();
-        else if (c == this.configuration.programCounterMoveRightCharacter()) return Tokens.ProgramCounter.changeDirectionRight();
-        else if (c == this.configuration.programCounterMoveUpCharacter()) return Tokens.ProgramCounter.changeDirectionUp();
-        else if (c == this.configuration.programCounterMoveDownCharacter()) return Tokens.ProgramCounter.changeDirectionDown();
-        else if (c == this.configuration.programCounterMoveRandomCharacter()) return Tokens.ProgramCounter.changeDirectionRandom();
-        else if (c == this.configuration.programCounterIfHorizontalCharacter()) return Tokens.ProgramCounter.ifHorizontal();
-        else if (c == this.configuration.programCounterIfVerticalCharacter()) return Tokens.ProgramCounter.ifVertical();
-        else if (c == this.configuration.programCounterBridgeCharacter()) return Tokens.ProgramCounter.bridge();
+        else if (c == this.configuration.mappings().programCounterMoveLeftCharacter()) return Tokens.ProgramCounter.changeDirectionLeft(c);
+        else if (c == this.configuration.mappings().programCounterMoveRightCharacter()) return Tokens.ProgramCounter.changeDirectionRight(c);
+        else if (c == this.configuration.mappings().programCounterMoveUpCharacter()) return Tokens.ProgramCounter.changeDirectionUp(c);
+        else if (c == this.configuration.mappings().programCounterMoveDownCharacter()) return Tokens.ProgramCounter.changeDirectionDown(c);
+        else if (c == this.configuration.mappings().programCounterMoveRandomCharacter()) return Tokens.ProgramCounter.changeDirectionRandom(c);
+        else if (c == this.configuration.mappings().programCounterIfHorizontalCharacter()) return Tokens.ProgramCounter.ifHorizontal(c);
+        else if (c == this.configuration.mappings().programCounterIfVerticalCharacter()) return Tokens.ProgramCounter.ifVertical(c);
+        else if (c == this.configuration.mappings().programCounterBridgeCharacter()) return Tokens.ProgramCounter.bridge(c);
         //region Complex
-        else if (c == this.configuration.programCounterGetCharacter()) return Tokens.ProgramCounter.get();
-        else if (c == this.configuration.programCounterPutCharacter()) return Tokens.ProgramCounter.put();
+        else if (c == this.configuration.mappings().programCounterGetCharacter()) return Tokens.ProgramCounter.get(c);
+        else if (c == this.configuration.mappings().programCounterPutCharacter()) return Tokens.ProgramCounter.put(c);
         //endregion
         //endregion
         //region Stack
-        else if (c == this.configuration.stackDuplicateCharacter()) return Tokens.Stack.duplicate();
-        else if (c == this.configuration.stackSwapCharacter()) return Tokens.Stack.swap();
-        else if (c == this.configuration.stackPopDiscardCharacter()) return Tokens.Stack.popDiscard();
-        else if (c == this.configuration.stackPopOutputIntCharacter()) return Tokens.Stack.popOutputInteger();
-        else if (c == this.configuration.stackPopOutputCharCharacter()) return Tokens.Stack.popOutputCharacter();
+        else if (c == this.configuration.mappings().stackDuplicateCharacter()) return Tokens.Stack.duplicate(c);
+        else if (c == this.configuration.mappings().stackSwapCharacter()) return Tokens.Stack.swap(c);
+        else if (c == this.configuration.mappings().stackPopDiscardCharacter()) return Tokens.Stack.popDiscard(c);
+        else if (c == this.configuration.mappings().stackPopOutputIntCharacter()) return Tokens.Stack.popOutputInteger(c);
+        else if (c == this.configuration.mappings().stackPopOutputCharCharacter()) return Tokens.Stack.popOutputCharacter(c);
         //endregion
         //region Miscellaneous
-        else if (c == this.configuration.miscellaneousToggleStringModeCharacter()) return Tokens.Miscellaneous.toggleStringMode();
-        else if (c == this.configuration.miscellaneousInputIntCharacter()) return Tokens.Miscellaneous.inputInteger();
-        else if (c == this.configuration.miscellaneousInputCharCharacter()) return Tokens.Miscellaneous.inputCharacter();
-        else if (c == this.configuration.miscellaneousEndCharacter()) return Tokens.Miscellaneous.end();
+        else if (c == this.configuration.mappings().miscellaneousToggleStringModeCharacter()) return Tokens.Miscellaneous.toggleStringMode(c);
+        else if (c == this.configuration.mappings().miscellaneousInputIntCharacter()) return Tokens.Miscellaneous.inputInteger(c);
+        else if (c == this.configuration.mappings().miscellaneousInputCharCharacter()) return Tokens.Miscellaneous.inputCharacter(c);
+        else if (c == this.configuration.mappings().miscellaneousEndCharacter()) return Tokens.Miscellaneous.end(c);
         //endregion
         //region Constants
-        else if (Character.isDigit(c)) return Tokens.constant((byte) Character.getNumericValue(c));
-        else if ((int) c < 256) return Tokens.constant((byte) c); // ASCII
+        else if ((int) c < 256) return Tokens.constant(c); // ASCII only
         //endregion
 
         else return null;

@@ -10,15 +10,18 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 public class Token {
     private final @NotNull TokenType type;
+    private final char source;
 
-    public Token(@NotNull TokenType type) {
+    public Token(@NotNull TokenType type, char source) {
         this.type = type;
+        this.source = source;
     }
 
     @Override
     public String toString() {
         return "Token{" +
                 "type=" + type +
+                ", source=" + source +
                 '}';
     }
 }
