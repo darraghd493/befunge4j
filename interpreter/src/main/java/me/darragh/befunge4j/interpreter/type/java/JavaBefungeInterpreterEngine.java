@@ -109,7 +109,9 @@ public final class JavaBefungeInterpreterEngine extends BefungeInterpreterEngine
                     int value = pop(stack);
                     currentDirection = value == 0 ? Direction.DOWN : Direction.UP;
                 }
-                case PC_BRIDGE -> step(currentDirection, position, width, height);
+                case PC_BRIDGE -> {
+                    // no-op
+                }
                 //region Complex
                 case PC_GET -> {
                     int y = pop(stack), x = pop(stack);
