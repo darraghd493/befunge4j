@@ -77,11 +77,10 @@ public final class JavaBefungeInterpreterEngine extends BefungeInterpreterEngine
                 case MATH_MULTIPLICATION -> stack.push(pop(stack) * pop(stack)); // a * b
                 case MATH_INT_DIVISION -> {
                     int a = pop(stack), b = pop(stack);
-                    int result = Math.floorDiv(b, a); // b / a
-                    if (result == 0) {
+                    if (a == 0) {
                         stack.push(this.configuration.console().inInteger());
                     } else {
-                        stack.push(result);
+                        stack.push(b / a);
                     }
                 }
                 case MATH_MODULO -> {
@@ -118,10 +117,10 @@ public final class JavaBefungeInterpreterEngine extends BefungeInterpreterEngine
                 case PC_BRIDGE -> {
                     //noinspection DuplicatedCode
                     switch (currentDirection) {
-                        case LEFT -> currentX = currentX - 1 % width;
-                        case RIGHT -> currentX = currentX + 1 % width;
-                        case UP -> currentY = currentY - 1 % height;
-                        case DOWN -> currentY = currentY + 1 % height;
+                        case LEFT -> currentX = (currentX - 1 + width) % width;
+                        case RIGHT -> currentX = (currentX + 1) % width;
+                        case UP -> currentY = (currentY - 1 + height) % height;
+                        case DOWN -> currentY = (currentY + 1) % height;
                     }
                 }
                 //region Complex
@@ -135,11 +134,12 @@ public final class JavaBefungeInterpreterEngine extends BefungeInterpreterEngine
                         stack.push(value);
                     }
                 }
-                case PC_PUT -> { // TODO: Fix
+                case PC_PUT -> {
                     int y = pop(stack), x = pop(stack), v = pop(stack);
                     if (x < 0 || x >= width || y < 0 || y >= height) {
-                        return;
+                        throw new IllegalStateException("PUT out of bounds");
                     }
+                    // TODO: Fix this - stale token type
                     Token token = tokens[y * width + x];
                     TokenType tokenType = token == null ? TokenType.CONSTANT : token.getType();
                     Token newToken = new Token(tokenType, (char) v);
@@ -148,7 +148,7 @@ public final class JavaBefungeInterpreterEngine extends BefungeInterpreterEngine
                 //endregion
                 //endregion
                 //region Stack
-                case STACK_DUPLICATE -> stack.push(stack.peek());
+                case STACK_DUPLICATE -> stack.push(stack.isEmpty() ? 0 : stack.peek());
                 case STACK_SWAP -> {
                     int a = pop(stack), b = pop(stack);
                     stack.push(a);
@@ -168,17 +168,17 @@ public final class JavaBefungeInterpreterEngine extends BefungeInterpreterEngine
                     char ch = currentToken.getSource();
                     if (Character.isDigit(ch)) {
                         stack.push(ch - '0');
-                    } else {
-                        stack.push((int) ch);
                     }
                 }
             }
         }
     }
 
+    //region Helpers
     private static int pop(Stack<Integer> stack) {
         return stack.isEmpty() ? 0 : stack.pop();
     }
+    //endregion
 
     private enum Direction {
         LEFT, RIGHT, UP, DOWN;
