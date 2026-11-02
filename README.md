@@ -1,5 +1,3 @@
 # befunge4j
 
-A modular Befunge parser and interpreter for Java.
-
-It is written to spec of Befunge-93.
+A clean and simple Java library for working with Befunge programs, particularly Befunge-93.
