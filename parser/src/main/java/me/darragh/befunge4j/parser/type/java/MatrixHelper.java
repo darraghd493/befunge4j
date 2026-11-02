@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+
 /**
  * @author darraghd493
  * @since 1.0.0
@@ -14,14 +16,13 @@ final class MatrixHelper {
 
     char[] createCharacterMatrix(@NotNull String source) {
         char[] matrix = new char[this.width * this.height];
-        int index = 0;
-        for (int y = 0; y < this.height; y++) {
-            for (int x = 0; x < this.width; x++) {
-                if (index < source.length()) {
-                    matrix[y * this.width + x] = source.charAt(index++);
-                } else {
-                    matrix[y * this.width + x] = ' '; // TODO: Better handling?
-                }
+        Arrays.fill(matrix, ' ');
+
+        String[] lines = source.split("\\r?\\n");
+        for (int y = 0; y < Math.min(lines.length, this.height); y++) {
+            String line = lines[y];
+            for (int x = 0; x < Math.min(line.length(), this.width); x++) {
+                matrix[y * this.width + x] = line.charAt(x);
             }
         }
         return matrix;
