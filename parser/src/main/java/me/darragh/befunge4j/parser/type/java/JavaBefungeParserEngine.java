@@ -24,7 +24,7 @@ public final class JavaBefungeParserEngine extends BefungeParserEngine {
         Token[] tokenMatrix = new Token[this.configuration.width() * this.configuration.height()];
 
         // go through the matrix and map tokens
-        for (int i = 0; i < source.length(); i++) {
+        for (int i = 0; i < characterMatrix.length; i++) {
             char c = characterMatrix[i];
             Token token = this.toToken(c);
             tokenMatrix[i] = token;
