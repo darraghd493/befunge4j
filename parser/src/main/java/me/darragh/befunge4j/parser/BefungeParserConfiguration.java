@@ -53,6 +53,6 @@ public record BefungeParserConfiguration(
             char miscellaneousEndCharacter
             //endregion
     ) {
-        public static final Mappings DEFAULT = new Mappings('+', '-', '*', '/', '%', '!', '`', '^', 'v', '>', '<', '?', '_', '|', '#', 'g', 'p', ':', '\\', '$', '.', ',', '\"', '&', '~', '@');
+        public static final Mappings DEFAULT = new Mappings('+', '-', '*', '/', '%', '!', '`', '^', 'v', '<', '>', '?', '_', '|', '#', 'g', 'p', ':', '\\', '$', '.', ',', '\"', '&', '~', '@');
     }
 }
